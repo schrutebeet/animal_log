@@ -7,7 +7,6 @@ from PIL import ImageTk, Image
 import animal_logger
 
 
-
 class LoginPage:
 
     def __init__(self) -> None:
@@ -21,7 +20,6 @@ class LoginPage:
 
         self.initialize_ui()
         self.app.mainloop()
-
 
     def get_image_path(self, img_name: str) -> Path:
         # Adjust this method to find your image correctly
