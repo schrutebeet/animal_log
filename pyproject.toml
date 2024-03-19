@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 customtkinter = "^5.2.2"
+tk = "^0.1.0"
+pillow = "^10.2.0"
 
 
 [build-system]
