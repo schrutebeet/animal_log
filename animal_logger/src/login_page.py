@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import tkinter
@@ -5,7 +6,7 @@ import customtkinter as ctk
 from PIL import ImageTk, Image
 
 import animal_logger
-from config.log_config.log_config import LOGGER
+from config.log_config import LOGGER
 
 
 class LoginPage:
@@ -96,7 +97,9 @@ class LoginPage:
     def attempt_login(self):
             # Fetch username and password
             username = self.username.get()
+            os.environ["USERNAME"] = username
             password = self.password.get()
+            os.environ["PASSWORD"] = password
             LOGGER.info(f"Attempting to login with {username}:{password}")
 
             # Here you'd add your authentication logic
