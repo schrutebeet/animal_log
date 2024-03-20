@@ -10,6 +10,7 @@ python = "^3.12"
 customtkinter = "^5.2.2"
 tk = "^0.1.0"
 pillow = "^10.2.0"
+sqlalchemy = "^2.0.28"
 
 
 [build-system]
