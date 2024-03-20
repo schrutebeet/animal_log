@@ -85,12 +85,24 @@ class LoginPage:
         self.hyperlink_label.place(relx=0.68, rely=0.53, anchor=tkinter.CENTER)
 
     def add_login_button(self) -> None:
-        self.login_button = ctk.CTkButton(master = self.frame, width = 235, text = "Login")
+        self.login_button = ctk.CTkButton(master = self.frame, width = 235, text = "Login", command=self.attempt_login)
         self.login_button.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 
     def add_exit_button(self) -> None:
         self.login_button = ctk.CTkButton(master = self.frame, width = 235, text = "Exit", fg_color = "#727272")
         self.login_button.place(relx=0.5, rely=0.82, anchor=tkinter.CENTER)
+
+    def attempt_login(self):
+            # Fetch username and password
+            username = self.username.get()
+            password = self.password.get()
+            print(f"Attempting to login with {username}:{password}")  # Placeholder for debug
+
+            # Here you'd add your authentication logic
+            if username == "admin" and password == "password":  # Example validation
+                self.login_success()
+            else:
+                print("Login Failed")  # Placeholder for feedback
 
 if __name__ == "__main__":
     LoginPage()
