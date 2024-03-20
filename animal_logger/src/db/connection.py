@@ -1,16 +1,14 @@
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from dependencies.authenticator import Settings
+from config.config import Config
 
-# create object for DB settings
-settings = Settings()
 # used to construct the database connection URL
 __DATABASE_URL = (
-    f"postgresql://{settings.POSTGRES_USER}:"
-    f"{settings.POSTGRES_PASSWORD}@"
-    f"{settings.POSTGRES_HOST}/"
-    f"{settings.POSTGRES_DATABASE}"
+    f"postgresql://{Config.get_info()['user']}:"
+    f"{Config.get_info()['password']}@"
+    f"{Config.get_info()['host']}/"
+    f"{Config.get_info()['database']}"
 )
 
 # used to create a database engine
