@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 # Create a logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 log_path = os.environ.get('LOGS_PATH')
 
@@ -29,6 +29,6 @@ file_handler_debug.setFormatter(formatter)
 console_handler.setFormatter(formatter)
 
 # Add both handlers to the logger
-logger.addHandler(file_handler_info)
-logger.addHandler(file_handler_debug)
-logger.addHandler(console_handler)
+LOGGER.addHandler(file_handler_info)
+LOGGER.addHandler(file_handler_debug)
+LOGGER.addHandler(console_handler)
