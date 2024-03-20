@@ -5,6 +5,7 @@ import customtkinter as ctk
 from PIL import ImageTk, Image
 
 import animal_logger
+from config.log_config.log_config import LOGGER
 
 
 class LoginPage:
@@ -96,7 +97,7 @@ class LoginPage:
             # Fetch username and password
             username = self.username.get()
             password = self.password.get()
-            print(f"Attempting to login with {username}:{password}")  # Placeholder for debug
+            LOGGER.info(f"Attempting to login with {username}:{password}")
 
             # Here you'd add your authentication logic
             if username == "admin" and password == "password":  # Example validation
