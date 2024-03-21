@@ -1,5 +1,6 @@
 import inspect
 import math
+from typing import Union
 from typing import Any, List, Union
 from itertools import compress
 
@@ -9,13 +10,13 @@ import psycopg2
 import sqlalchemy
 
 from config.log_config import LOGGER
-from animal_logger.src.db.connection import SessionLocal, engine
+from config.config import Config
 
 
 class UtilsDB:
     def __init__(self) -> None:
-        self.engine = engine
-        self.dbsession = SessionLocal()
+        self.engine = Config.get_info()['db_engine']
+        self.dbsession = sqlalchemy.sessionmaker(bind=self.engine)
 
     def create_specific_model(
         self, class_name: str, model_name: str, schema_name: str, column_data: dict
@@ -152,9 +153,7 @@ class UtilsDB:
         return data_dict
 
     @staticmethod
-    def _divide_dict_in_batches(
-        input_dict: dict, batch_size: int
-    ) -> List[List[dict]]:
+    def _divide_dict_in_batches(input_dict: dict, batch_size: int) -> List[List[dict]]:
         """Divide dictionary in smaller pieces for speed improvement."""
         n_chunks = math.ceil(len(input_dict) / batch_size)
         batched_list_of_dicts = []
@@ -167,12 +166,7 @@ class UtilsDB:
         return batched_list_of_dicts
 
     @staticmethod
-    def get_table(schema: str, table_name: str, engine: str) -> dd.DataFrame:
-        from animal_logger.src.db.connection import metadata
-        from sqlalchemy import MetaData, create_engine
-        from config.config import Config
-        metadata.reflect(bind=create_engine(Config.get_info()['db_url']))
-        print(metadata.sorted_tables)
+    def get_table(schema: str, table_name: str, engine: str, as_df = False) -> dd.DataFrame:
         """Get dataframe out of a table in the database.
 
         Args:
@@ -182,6 +176,24 @@ class UtilsDB:
         Returns:
             dd.DataFrame: Dask dataframe containing the info of the table.
         """
-        sql = f"SELECT * FROM '{schema}'.{table_name}"
-        ddf = dd.read_sql(sql, con=engine, index_col='username', encoding='latin1')
+        # Do not forget to grant access to user
+        # GRANT SELECT ON ALL TABLES IN SCHEMA <schemaname> TO <user>;
+        sql_text = f" * FROM {schema}.{table_name}" # The SELECT is added in the next line
+        sql = sqlalchemy.sql.select(sqlalchemy.sql.text(sql_text))
+        try:
+            ddf = dd.read_sql(sql = sql, con = engine, index_col = 'id')
+            if as_df:
+                ddf = ddf.compute()
+        except UnicodeDecodeError:
+            ddf = 'Invalid credentials. Try again.'
+        except sqlalchemy.exc.OperationalError:
+            ddf = 'Please, log in with your credentials.'
+        return ddf
+
+    def filter_table(self, schema, table_name, engine, filtered_col: str, filtered_val: Union[str, List]) -> None:
+        ddf = self.get_table(schema, table_name, engine)
+        if isinstance(filtered_val, list):
+            ddf = ddf.loc[ddf[filtered_col].isin(filtered_val)]
+        else:
+            ddf = ddf.loc[ddf[filtered_col] == filtered_val]
         return ddf
