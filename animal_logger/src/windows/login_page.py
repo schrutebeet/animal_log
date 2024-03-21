@@ -20,6 +20,7 @@ class LoginPage:
         self.app.title("Login") # Name window tab
         self.login_image = None
         self.login_image_label = None
+        self.error_message = None
 
         self.initialize_ui()
         self.app.mainloop()
@@ -74,7 +75,8 @@ class LoginPage:
     def add_frame(self) -> None:
         self.frame = ctk.CTkFrame(master = self.login_image_label, width = 350, height = 370, corner_radius = 15)
         self.frame.place(relx = 0.5, rely = 0.5, anchor = tkinter.CENTER)
-        self.frame_title = ctk.CTkLabel(master = self.frame, text = "Log in into your account", font = ("Century Gothic", 20))
+        self.frame_title = ctk.CTkLabel(master = self.frame, text = "Log in into your account", 
+                                        font = ("Century Gothic", 20))
         self.frame_title.place(relx=0.5, rely=0.15, anchor=tkinter.CENTER)
 
     def add_username_password(self) -> None:
@@ -84,7 +86,8 @@ class LoginPage:
         self.password.place(relx=0.5, rely=0.45, anchor=tkinter.CENTER)
 
     def add_forgot_password(self) -> None:
-        self.hyperlink_label = ctk.CTkLabel(master = self.frame, text="Forgot password?", cursor="hand2")
+        self.hyperlink_label = ctk.CTkLabel(master = self.frame, text="Forgot password?", 
+                                            font = ("Century Gothic", 12), cursor="hand2")
         self.hyperlink_label.place(relx=0.68, rely=0.53, anchor=tkinter.CENTER)
 
     def add_login_button(self) -> None:
@@ -92,10 +95,11 @@ class LoginPage:
         self.login_button.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 
     def add_exit_button(self) -> None:
-        self.login_button = ctk.CTkButton(master = self.frame, width = 235, text = "Exit", fg_color = "#727272")
+        self.login_button = ctk.CTkButton(master = self.frame, width = 235, text = "Exit", 
+                                          fg_color = "#727272", command=self.exit_application)
         self.login_button.place(relx=0.5, rely=0.82, anchor=tkinter.CENTER)
 
-    def attempt_login(self):
+    def attempt_login(self) -> None:
             # Fetch username and password
             username = str(self.username.get())
             os.environ["USERNAME"] = username
@@ -103,12 +107,22 @@ class LoginPage:
             os.environ["PASSWORD"] = password
             LOGGER.info(f"Attempting to login with {username}:{password}")
             db_url = Config.get_info()['db_url']
-            login_table = UtilsDB.get_table(schema = 'credentials', table_name = 'login_app', engine = db_url)
-            print(login_table)
-            if not isinstance(login_table, str):
+            login_table, message = UtilsDB.get_table(schema = 'credentials', table_name = 'login_app', engine = db_url)
+            # Erase any previous text if any
+            if self.error_message:
+                self.error_message.configure(text='')
+            if not message: # user is correctly logged in
                 user_exists = len(login_table.loc[(login_table['username'] == username) 
                                                 & (login_table['password'] == password)].index)
-                print(user_exists)
+                
+            else:
+                self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
+                                                  font = ("Century Gothic", 12, "bold"), text_color = '#FF0000')
+                self.error_message.place(relx=0.17, rely=0.58)
+            
+    def exit_application(self):
+        self.app.destroy()
+
 
 if __name__ == "__main__":
     from config.config import Config
