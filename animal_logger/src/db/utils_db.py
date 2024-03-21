@@ -4,12 +4,12 @@ from typing import Any, List, Union
 from itertools import compress
 
 import pandas as pd
+import dask.dataframe as dd
 import psycopg2
 import sqlalchemy
 
-from config.log_config import logger
-from animal_logger.src.db.connection import models, SessionLocal, engine
-from animal_logger.src.db.models import create_dynamic_model
+from config.log_config import LOGGER
+from animal_logger.src.db.connection import SessionLocal, engine
 
 
 class UtilsDB:
@@ -44,7 +44,7 @@ class UtilsDB:
         insp = sqlalchemy.inspect(self.engine)
         if not insp.has_table(table_name=table_name, schema=schema_name):
             model_class.__table__.create(self.engine)
-            logger.info(
+            LOGGER.info(
                 f"Model '{model_name}' created successfully in schema '{schema_name}'."
             )
         return model_class
@@ -58,7 +58,7 @@ class UtilsDB:
             schema_name = cls.__table_args__["schema"]
             if not insp.has_table(table_name=table_name, schema=schema_name):
                 cls.__table__.create(self.engine)
-                logger.info(
+                LOGGER.info(
                     f"Model '{table_name}' created successfully in schema '{schema_name}'."
                 )
 
@@ -95,26 +95,26 @@ class UtilsDB:
         list_of_dicts = [dict(zip(data_dict, t)) for t in zip(*data_dict.values())]
         batched_list_of_dicts = self._divide_dict_in_batches(list_of_dicts, batch_size)
         is_data_batched = len(batched_list_of_dicts) > 1
-        logger.info(f"Starting data storage in DB for table '{model.__tablename__}'.")
+        LOGGER.info(f"Starting data storage in DB for table '{model.__tablename__}'.")
         for idx, dict_batch in enumerate(batched_list_of_dicts):
             try:
                 self.dbsession.bulk_insert_mappings(model, dict_batch)
                 # Commit the changes to the database for each model
                 self.dbsession.commit()
                 if is_data_batched:
-                    logger.info(
+                    LOGGER.info(
                     f"Batch number {idx + 1} of table '{model.__tablename__}' has been successfully stored in DB."
                     )
                 else:
-                    logger.info(
+                    LOGGER.info(
                         f"Table '{model.__tablename__}' has been successfully stored in DB."
                     )
             except sqlalchemy.exc.IntegrityError as e:
-                logger.warning(
+                LOGGER.warning(
                     f"Duplicated primary key entries. Skipping. Error log: \n {e}"
                 )
             except Exception as e:
-                logger.error(
+                LOGGER.error(
                     f"An error occurred when inserting data into database: {e}."
                 )
         # Close connection
@@ -135,7 +135,7 @@ class UtilsDB:
                 break
         
         if is_same:
-            logger.info(f"All values in the keys of the dictionary are of the same size: {len_keys[0]}")
+            LOGGER.info(f"All values in the keys of the dictionary are of the same size: {len_keys[0]}")
             # Create mask so that the dict only contains unique ID's
             mask_list = []
             for idx, identifier in enumerate(data_dict['id']):
@@ -148,7 +148,7 @@ class UtilsDB:
             for k, v in data_dict.items():
                 data_dict[k] = list(compress(v, mask_list))
         else:
-            logger.error(f"Not all values in the keys of the dictionary are of the same size")
+            LOGGER.error(f"Not all values in the keys of the dictionary are of the same size")
         return data_dict
 
     @staticmethod
@@ -165,3 +165,23 @@ class UtilsDB:
             starting_row += batch_size
             ending_row += batch_size
         return batched_list_of_dicts
+
+    @staticmethod
+    def get_table(schema: str, table_name: str, engine: str) -> dd.DataFrame:
+        from animal_logger.src.db.connection import metadata
+        from sqlalchemy import MetaData, create_engine
+        from config.config import Config
+        metadata.reflect(bind=create_engine(Config.get_info()['db_url']))
+        print(metadata.sorted_tables)
+        """Get dataframe out of a table in the database.
+
+        Args:
+            schema (str): Schema of the table.
+            table_name (str): Table name.
+
+        Returns:
+            dd.DataFrame: Dask dataframe containing the info of the table.
+        """
+        sql = f"SELECT * FROM '{schema}'.{table_name}"
+        ddf = dd.read_sql(sql, con=engine, index_col='username', encoding='latin1')
+        return ddf
