@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Union
 
 import yaml
+from sqlalchemy import create_engine
 
 import animal_logger
 from config.log_config import LOGGER
@@ -33,9 +34,7 @@ class Config:
                                                     f"{Config._CONFIG_DICT['host']}/"
                                                     f"{Config._CONFIG_DICT['database']}"
                                                 )
+                Config._CONFIG_DICT['db_engine'] = create_engine(Config._CONFIG_DICT['db_url'])
         else:
             raise Exception("Attempting to fetch config info, but Config constructor has not been called yet.")
         return Config._CONFIG_DICT
-
-config = Config()
-print(Config.get_info())
