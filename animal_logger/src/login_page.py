@@ -97,14 +97,18 @@ class LoginPage:
 
     def attempt_login(self):
             # Fetch username and password
-            username = self.username.get()
-            os.environ["USERNAME"] = str(username)
-            password = self.password.get()
-            os.environ["PASSWORD"] = str(password)
+            username = str(self.username.get())
+            os.environ["USERNAME"] = username
+            password = str(self.password.get())
+            os.environ["PASSWORD"] = password
             LOGGER.info(f"Attempting to login with {username}:{password}")
-            print('CONFIG', Config().get_info())
-
-            UtilsDB.get_table('credentials', 'login_app', engine=Config.get_info()['db_url'])
+            db_url = Config.get_info()['db_url']
+            login_table = UtilsDB.get_table(schema = 'credentials', table_name = 'login_app', engine = db_url)
+            print(login_table)
+            if not isinstance(login_table, str):
+                user_exists = len(login_table.loc[(login_table['username'] == username) 
+                                                & (login_table['password'] == password)].index)
+                print(user_exists)
 
 if __name__ == "__main__":
     from config.config import Config
