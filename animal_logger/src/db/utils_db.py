@@ -184,11 +184,14 @@ class UtilsDB:
             ddf = dd.read_sql(sql = sql, con = engine, index_col = 'id')
             if as_df:
                 ddf = ddf.compute()
+            message = None
         except UnicodeDecodeError:
-            ddf = 'Invalid credentials. Try again.'
+            ddf = None
+            message = 'Invalid credentials. Try again.'
         except sqlalchemy.exc.OperationalError:
-            ddf = 'Please, log in with your credentials.'
-        return ddf
+            ddf = None
+            message = 'Please, log in with your credentials.'
+        return ddf, message
 
     def filter_table(self, schema, table_name, engine, filtered_col: str, filtered_val: Union[str, List]) -> None:
         ddf = self.get_table(schema, table_name, engine)
