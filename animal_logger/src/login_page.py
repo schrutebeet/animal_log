@@ -7,6 +7,7 @@ from PIL import ImageTk, Image
 
 import animal_logger
 from config.log_config import LOGGER
+from animal_logger.src.db.utils_db import UtilsDB
 
 
 class LoginPage:
@@ -97,16 +98,15 @@ class LoginPage:
     def attempt_login(self):
             # Fetch username and password
             username = self.username.get()
-            os.environ["USERNAME"] = username
+            os.environ["USERNAME"] = str(username)
             password = self.password.get()
-            os.environ["PASSWORD"] = password
+            os.environ["PASSWORD"] = str(password)
             LOGGER.info(f"Attempting to login with {username}:{password}")
+            print('CONFIG', Config().get_info())
 
-            # Here you'd add your authentication logic
-            if username == "admin" and password == "password":  # Example validation
-                self.login_success()
-            else:
-                print("Login Failed")  # Placeholder for feedback
+            UtilsDB.get_table('credentials', 'login_app', engine=Config.get_info()['db_url'])
 
 if __name__ == "__main__":
+    from config.config import Config
+    Config()
     LoginPage()
