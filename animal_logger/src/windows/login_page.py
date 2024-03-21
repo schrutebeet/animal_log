@@ -15,15 +15,15 @@ class LoginPage:
     def __init__(self) -> None:
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("green")
-        self.app = ctk.CTk() # Creates window
-        self.app.geometry('1000x660') # Set default window size
-        self.app.title("Login") # Name window tab
+        self.window = ctk.CTk() # Creates window
+        self.window.geometry('1000x660') # Set default window size
+        self.window.title("Login") # Name window tab
         self.login_image = None
         self.login_image_label = None
         self.error_message = None
 
         self.initialize_ui()
-        self.app.mainloop()
+        self.window.mainloop()
 
     def get_image_path(self, img_name: str) -> Path:
         # Adjust this method to find your image correctly
@@ -58,8 +58,8 @@ class LoginPage:
         img = Image.open(img_path)
 
         # Resize the image to the current window size
-        new_width = self.app.winfo_width()
-        new_height = self.app.winfo_height()
+        new_width = self.window.winfo_width()
+        new_height = self.window.winfo_height()
         # Resize to new window size using LANCZOS resampling filter
         img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
         # Update login image
@@ -69,7 +69,7 @@ class LoginPage:
         if self.login_image_label:
             self.login_image_label.configure(image=self.login_image)
         else:
-            self.login_image_label = ctk.CTkLabel(master=self.app, image=self.login_image, text = "")
+            self.login_image_label = ctk.CTkLabel(master=self.window, image=self.login_image, text = "")
             self.login_image_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     def add_frame(self) -> None:
@@ -121,7 +121,7 @@ class LoginPage:
                 self.error_message.place(relx=0.17, rely=0.58)
             
     def exit_application(self):
-        self.app.destroy()
+        self.window.destroy()
 
 
 if __name__ == "__main__":
