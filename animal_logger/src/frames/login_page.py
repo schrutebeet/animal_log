@@ -6,6 +6,7 @@ import customtkinter as ctk
 from PIL import ImageTk, Image
 
 import animal_logger
+from animal_logger.src.frames.dashboard import Dashboard
 from config.log_config import LOGGER
 from animal_logger.src.db.utils_db import UtilsDB
 
@@ -114,7 +115,8 @@ class LoginPage:
             if not message: # user is correctly logged in
                 user_exists = len(login_table.loc[(login_table['username'] == username) 
                                                 & (login_table['password'] == password)].index)
-                
+                self.window.pack_forget()
+                Dashboard()
             else:
                 self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
                                                   font = ("Century Gothic", 12, "bold"), text_color = '#FF0000')
