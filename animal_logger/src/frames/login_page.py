@@ -6,25 +6,21 @@ import customtkinter as ctk
 from PIL import ImageTk, Image
 
 import animal_logger
-from animal_logger.src.frames.dashboard import Dashboard
+from config.config import Config
 from config.log_config import LOGGER
 from animal_logger.src.db.utils_db import UtilsDB
+from animal_logger.src.frames.baseframe import BaseFrame
+from animal_logger.src.frames.dashboard import Dashboard
 
 
-class LoginPage:
+class LoginPage(BaseFrame):
 
-    def __init__(self) -> None:
-        ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("green")
-        self.window = ctk.CTk() # Creates window
-        self.window.geometry('1000x660') # Set default window size
-        self.window.title("Login") # Name window tab
+    def __init__(self, window) -> None:
+        super().__init__(window)
+        self.window = window
         self.login_image = None
         self.login_image_label = None
         self.error_message = None
-
-        self.initialize_ui()
-        self.window.mainloop()
 
     def get_image_path(self, img_name: str) -> Path:
         # Adjust this method to find your image correctly
@@ -41,6 +37,7 @@ class LoginPage:
         self.add_forgot_password()
         self.add_login_button()
         self.add_exit_button()
+        self.window.mainloop()
 
     def resize_image(self, event:str = None) -> None:
         """Take image and automatically resize it according to the current window shape requirements
@@ -77,7 +74,7 @@ class LoginPage:
         self.frame = ctk.CTkFrame(master = self.login_image_label, width = 350, height = 370, corner_radius = 15)
         self.frame.place(relx = 0.5, rely = 0.5, anchor = tkinter.CENTER)
         self.frame_title = ctk.CTkLabel(master = self.frame, text = "Log in into your account", 
-                                        font = ("Century Gothic", 20))
+                                        font = ("Montserrat", 20))
         self.frame_title.place(relx=0.5, rely=0.15, anchor=tkinter.CENTER)
 
     def add_username_password(self) -> None:
@@ -88,7 +85,7 @@ class LoginPage:
 
     def add_forgot_password(self) -> None:
         self.hyperlink_label = ctk.CTkLabel(master = self.frame, text="Forgot password?", 
-                                            font = ("Century Gothic", 12), cursor="hand2")
+                                            font = ("Montserrat", 12), cursor="hand2")
         self.hyperlink_label.place(relx=0.68, rely=0.53, anchor=tkinter.CENTER)
 
     def add_login_button(self) -> None:
@@ -115,18 +112,14 @@ class LoginPage:
             if not message: # user is correctly logged in
                 user_exists = len(login_table.loc[(login_table['username'] == username) 
                                                 & (login_table['password'] == password)].index)
-                self.window.pack_forget()
-                Dashboard()
+                if user_exists: # user is in login database
+                    for widget in self.window.winfo_children():
+                        widget.destroy()
+                        Dashboard(self.window).stuff()
             else:
                 self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
-                                                  font = ("Century Gothic", 12, "bold"), text_color = '#FF0000')
+                                                  font = ("Montserrat", 12, "bold"), text_color = '#FF0000')
                 self.error_message.place(relx=0.17, rely=0.58)
             
     def exit_application(self):
         self.window.destroy()
-
-
-if __name__ == "__main__":
-    from config.config import Config
-    Config()
-    LoginPage()
