@@ -177,7 +177,9 @@ class UtilsDB:
             dd.DataFrame: Dask dataframe containing the info of the table.
         """
         # Do not forget to grant access to user
+        # ALTER ROLE <user> WITH LOGIN;
         # GRANT SELECT ON ALL TABLES IN SCHEMA <schemaname> TO <user>;
+        # GRANT USAGE ON SCHEMA <schemaname> TO  <user>;
         sql_text = f" * FROM {schema}.{table_name}" # The SELECT is added in the next line
         sql = sqlalchemy.sql.select(sqlalchemy.sql.text(sql_text))
         try:
@@ -191,6 +193,9 @@ class UtilsDB:
         except sqlalchemy.exc.OperationalError:
             ddf = None
             message = 'Please, log in with your credentials.'
+        except sqlalchemy.exc.ProgrammingError:
+            ddf = None
+            message = 'You have no rights to the database.'
         return ddf, message
 
     def filter_table(self, schema, table_name, engine, filtered_col: str, filtered_val: Union[str, List]) -> None:
