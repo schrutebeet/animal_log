@@ -4,6 +4,7 @@ import customtkinter as ctk
 
 from animal_logger.opt.img import menu
 from animal_logger.src.frames.baseframe import BaseFrame
+from animal_logger.src.frames.add_animal import AddAnimal
 
 
 class Dashboard(BaseFrame):
@@ -91,13 +92,12 @@ class Dashboard(BaseFrame):
 
     def set_home_button(self):
         print("Something")
-        self.main_frame.destroy()
 
     def set_recent_button(self):
         pass
 
     def set_create_record_button(self):
-        pass
+        AddAnimal(self.window, self.main_frame).initialize_ui()
 
     def set_view_record_button(self):
         pass

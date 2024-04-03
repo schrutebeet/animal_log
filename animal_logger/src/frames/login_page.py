@@ -39,7 +39,7 @@ class LoginPage(BaseFrame):
         self.add_exit_button()
         self.window.mainloop()
 
-    def resize_image(self, event:str = None) -> None:
+    def resize_image(self, event: str = None) -> None:
         """Take image and automatically resize it according to the current window shape requirements
         by the user. If the image label is not created, it proceeds to do so, otherwise it configures
         the image label with the latest reshaped version of the image.
@@ -98,28 +98,28 @@ class LoginPage(BaseFrame):
         self.login_button.place(relx=0.5, rely=0.82, anchor=tkinter.CENTER)
 
     def attempt_login(self) -> None:
-            # Fetch username and password
-            username = str(self.username.get())
-            os.environ["USERNAME"] = username
-            password = str(self.password.get())
-            os.environ["PASSWORD"] = password
-            LOGGER.info(f"Attempting to login with {username}:{password}")
-            db_url = Config.get_info()['db_url']
-            login_table, message = UtilsDB.get_table(schema = 'credentials', table_name = 'login_app', engine = db_url)
-            # Erase any previous text if any
-            if self.error_message:
-                self.error_message.configure(text='')
-            if not message: # user is correctly logged in
-                user_exists = len(login_table.loc[(login_table['username'] == username) 
-                                                & (login_table['password'] == password)].index)
-                if user_exists: # user is in login database
-                    for widget in self.window.winfo_children():
-                        widget.destroy()
-                        Dashboard(self.window).stuff()
-            else:
-                self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
-                                                  font = ("Montserrat", 12, "bold"), text_color = '#FF0000')
-                self.error_message.place(relx=0.17, rely=0.58)
-            
+        # Fetch username and password
+        username = str(self.username.get())
+        os.environ["USERNAME"] = username
+        password = str(self.password.get())
+        os.environ["PASSWORD"] = password
+        LOGGER.info(f"Attempting to login with {username}:{password}")
+        db_url = Config.get_info()['db_url']
+        login_table, message = UtilsDB.get_table(schema = 'credentials', table_name = 'login_app', engine = db_url)
+        # Erase any previous text if any
+        if self.error_message:
+            self.error_message.configure(text='')
+        if not message: # user is correctly logged in
+            user_exists = len(login_table.loc[(login_table['username'] == username) 
+                                            & (login_table['password'] == password)].index)
+            if user_exists: # user is in login database
+                for widget in self.window.winfo_children():
+                    widget.destroy()
+                    # Dashboard(self.window).initialize_ui()
+        else:
+            self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
+                                                font = ("Montserrat", 12, "bold"), text_color = '#FF0000')
+            self.error_message.place(relx=0.17, rely=0.58)
+        
     def exit_application(self):
         self.window.destroy()

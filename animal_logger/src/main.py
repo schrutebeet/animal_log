@@ -9,5 +9,5 @@ if __name__ == "__main__":
     from config.config import Config
     Config()
     window = ctk.CTk() # Creates window
-    # LoginPage(window).initialize_ui()
+    LoginPage(window).initialize_ui()
     Dashboard(window).initialize_ui()
