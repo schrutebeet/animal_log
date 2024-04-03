@@ -115,7 +115,7 @@ class LoginPage(BaseFrame):
             if user_exists: # user is in login database
                 for widget in self.window.winfo_children():
                     widget.destroy()
-                    # Dashboard(self.window).initialize_ui()
+                    Dashboard(self.window).initialize_ui()
         else:
             self.error_message = ctk.CTkLabel(master = self.frame, text = message, 
                                                 font = ("Montserrat", 12, "bold"), text_color = '#FF0000')
