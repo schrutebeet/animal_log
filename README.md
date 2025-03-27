@@ -14,27 +14,28 @@ Animal Logger is a Python-based application designed to manage and log informati
 
 
 ## Project Structure
-animal-logger/ 
-├── animal_logger/ 
-│ ├── opt/ 
-│ │ └── img/ # Contains images used in the UI 
-│ ├── src/ 
-│ │ ├── animals/ # Animal-related classes (e.g., BaseAnimal, Mammal) 
-│ │ ├── db/ # Database utilities and connection setup 
-│ │ ├── frames/ # GUI frames (e.g., LoginPage, Dashboard, AddAnimal) 
-│ │ ├── main.py # Entry point of the application 
-│ └── __init__.py 
-├── config/ 
-│ ├── app_config.yaml # Application-specific configurations 
-│ ├── db_config.yaml # Database connection configurations 
-│ ├── config.py # Configuration loader 
-│ ├── log_config.py # Logging configuration 
-│ └── __init__.py 
-├── tests/ # Placeholder for unit tests 
-├── .gitignore # Git ignore rules 
-├── poetry.lock # Poetry lock file for dependencies 
-├── pyproject.toml # Poetry configuration file 
-└── README.md # Project documentation
+
+animal-logger/  
+├── animal_logger/  
+│   ├── opt/  
+│   │   └── img/ # Contains images used in the UI  
+│   ├── src/  
+│   │   ├── animals/ # Animal-related classes (e.g., BaseAnimal, Mammal)  
+│   │   ├── db/ # Database utilities and connection setup  
+│   │   ├── frames/ # GUI frames (e.g., LoginPage, Dashboard, AddAnimal)  
+│   │   ├── main.py # Entry point of the application  
+│   └── __init__.py  
+├── config/  
+│   ├── app_config.yaml # Application-specific configurations  
+│   ├── db_config.yaml # Database connection configurations  
+│   ├── config.py # Configuration loader  
+│   ├── log_config.py # Logging configuration  
+│   └── __init__.py  
+├── tests/ # Placeholder for unit tests  
+├── .gitignore # Git ignore rules  
+├── poetry.lock # Poetry lock file for dependencies  
+├── pyproject.toml # Poetry configuration file  
+└── README.md # Project documentation  
 
 
 ## Installation
