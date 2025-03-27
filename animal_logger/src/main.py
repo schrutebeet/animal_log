@@ -10,4 +10,4 @@ if __name__ == "__main__":
     Config()
     window = ctk.CTk() # Creates window
     LoginPage(window).initialize_ui()
-    
+    Dashboard(window).initialize_ui()
