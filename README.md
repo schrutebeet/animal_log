@@ -15,6 +15,7 @@ Animal Logger is a Python-based application designed to manage and log informati
 
 ## Project Structure
 
+```
 animal-logger/  
 ├── animal_logger/  
 │   ├── opt/  
@@ -36,7 +37,7 @@ animal-logger/
 ├── poetry.lock # Poetry lock file for dependencies  
 ├── pyproject.toml # Poetry configuration file  
 └── README.md # Project documentation  
-
+```
 
 ## Installation
 
