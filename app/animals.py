@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import models
 from app.database import get_db
+from app.appointments import get_appointments_by_animal_id
 from app.utilities.utils import calculate_age, login_required
 
 # Defines what will be a set of routes under the /animals prefix
@@ -70,7 +71,6 @@ def search_animal_get(request: Request, name: str | None = None, db: Session = D
         return RedirectResponse("/login")
     animals = None
     if name:
-        print("\n\n\n\n", name, "\n\n\n\n\n\n")
         # Search by partial match (case-insensitive)
         animals = db.query(models.Animal).filter(models.Animal.name.ilike(f"%{name}%")).all()
     return templates.TemplateResponse("retrieve_animal.html", {"request": request, "animals": animals, "router_name": "/animals"})
@@ -88,11 +88,14 @@ def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db
         years, months = calculate_age(animal.birth)
     else:
         years, months = None, None
+    
+    appointment_dates = get_appointments_by_animal_id(db, animal_id)
     return templates.TemplateResponse("animal_detail.html", {
         "request": request,
         "animal": animal,
         "age_years": years,
-        "age_months": months
+        "age_months": months,
+        "appointment_dates": appointment_dates
     })
 
 @router.get("/{animal_id}/edit", response_class=HTMLResponse)

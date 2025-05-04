@@ -19,4 +19,55 @@
         <a href="/animals/{{ animal.id }}/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">Edit Record</a>
     </div>
 </div>
+<div class="bg-white p-6 rounded shadow mt-6">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-lg font-semibold">Appointments for the next 6 months</h3>
+    <a href="/appointments/manage/{{ animal.id }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded text-sm font-medium">
+      Manage Appointments
+    </a>
+  </div>  
+  <div id="calendar-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- JS will populate calendar here -->
+  </div>
+</div>
+
+<script>
+  const appointmentDates = {{ appointment_dates | tojson }};
+</script>
+<script>
+function generateCalendars() {
+  const container = document.getElementById("calendar-container");
+  const today = new Date();
+  for (let i = 0; i < 6; i++) {
+    const current = new Date(today.getFullYear(), today.getMonth() + i, 1);
+    const year = current.getFullYear();
+    const month = current.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthName = current.toLocaleString("default", { month: "long" });
+
+    const calendar = document.createElement("div");
+    calendar.className = "border rounded p-2";
+
+    let html = `<h4 class="text-center font-medium mb-2">${monthName} ${year}</h4>`;
+    html += `<div class="grid grid-cols-7 text-sm font-semibold text-center mb-1">
+        <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+      </div><div class="grid grid-cols-7 text-center text-sm gap-1">`;
+
+    for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = new Date(year, month, d).toISOString().slice(0, 10);
+      const isAppt = appointmentDates.includes(dateStr);
+      html += `<div class="py-1 ${isAppt ? 'text-white font-bold rounded' : ''}" style="${isAppt ? 'background-color: #B53737;' : ''}">${d}</div>`;
+    }
+    html += `</div>`;
+    calendar.innerHTML = html;
+    container.appendChild(calendar);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", generateCalendars);
+</script>
+
 {% endblock %}

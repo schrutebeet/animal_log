@@ -23,7 +23,7 @@ def search_animal_get(request: Request, name: str | None = None, db: Session = D
         animals = db.query(models.Animal).filter(models.Animal.name.ilike(f"%{name}%")).all()
     return templates.TemplateResponse("retrieve_animal.html", {"request": request, "animals": animals, "router_name": "/appointments"})
 
-@router.get("/{animal_id}", response_class=HTMLResponse)
+@router.get("/manage/{animal_id}", response_class=HTMLResponse)
 def manage_appointments_get(request: Request, animal_id: int, db: Session = Depends(get_db)):
     # Show appointments management page
     if not login_required(request):
@@ -34,7 +34,7 @@ def manage_appointments_get(request: Request, animal_id: int, db: Session = Depe
     specific_appointment = db.query(models.Appointments).filter(models.Appointments.animal_id == animal_id).all()
     return templates.TemplateResponse("manage_appointments.html", {"request": request, "animal": animal})
     
-@router.post("/{animal_id}", response_class=HTMLResponse)
+@router.post("/manage/{animal_id}", response_class=HTMLResponse)
 def manage_appointments_post(
     request: Request,
     animal_id: int,
@@ -51,9 +51,24 @@ def manage_appointments_post(
         time=time,
         description=description
     )
-    print("\n\n\n\n", animal_id, "\n\n\n\n")
     db.add(new_appointment)
     db.commit()
     db.refresh(new_appointment)
     
-    return RedirectResponse(f"/appointments/{animal_id}", status_code=303)
+    return RedirectResponse(f"/appointments/manage/{animal_id}", status_code=303)
+
+
+def get_appointments_by_animal_id(db: Session, animal_id: int) -> list[datetime.date]:
+    # Fetch appointments for a specific animal
+    # Get appointments in the next 6 months
+    today = datetime.date.today()
+    in_six_months = today + datetime.timedelta(days=180)
+    appointments = db.query(models.Appointments).filter(
+        models.Appointments.animal_id == animal_id,
+        models.Appointments.date >= today,
+        models.Appointments.date <= in_six_months
+    ).all()
+
+    appointments = [a.date.isoformat() for a in appointments]
+
+    return appointments
