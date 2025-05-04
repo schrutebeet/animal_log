@@ -89,13 +89,14 @@ def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db
     else:
         years, months = None, None
     
-    appointment_dates = get_appointments_by_animal_id(db, animal_id)
+    appointments = get_appointments_by_animal_id(db, animal_id)
+    print("\n\n\n\n\n\n", appointments, "\n\n\n\n\n\n")
     return templates.TemplateResponse("animal_detail.html", {
         "request": request,
         "animal": animal,
         "age_years": years,
         "age_months": months,
-        "appointment_dates": appointment_dates
+        "appointments": appointments
     })
 
 @router.get("/{animal_id}/edit", response_class=HTMLResponse)

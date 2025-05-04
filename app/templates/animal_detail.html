@@ -19,6 +19,7 @@
         <a href="/animals/{{ animal.id }}/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">Edit Record</a>
     </div>
 </div>
+
 <div class="bg-white p-6 rounded shadow mt-6">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-lg font-semibold">Appointments for the next 6 months</h3>
@@ -26,14 +27,17 @@
       Manage Appointments
     </a>
   </div>  
+
   <div id="calendar-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <!-- JS will populate calendar here -->
   </div>
 </div>
 
 <script>
-  const appointmentDates = {{ appointment_dates | tojson }};
+  const appointmentDates = {{ appointments.keys() | list | tojson }};
+  const appointmentDescriptions = {{ appointments | tojson }};
 </script>
+
 <script>
 function generateCalendars() {
   const container = document.getElementById("calendar-container");
@@ -57,9 +61,10 @@ function generateCalendars() {
 
     for (let i = 0; i < firstDay; i++) html += `<div></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = new Date(year, month, d).toISOString().slice(0, 10);
+      const dateStr = new Date(year, month, d+1).toISOString().slice(0, 10);
       const isAppt = appointmentDates.includes(dateStr);
-      html += `<div class="py-1 ${isAppt ? 'text-white font-bold rounded' : ''}" style="${isAppt ? 'background-color: #B53737;' : ''}">${d}</div>`;
+      const description = appointmentDescriptions[dateStr] || '';
+      html += `<div class="py-1 ${isAppt ? 'text-white font-bold rounded' : ''}" style="${isAppt ? 'background-color: #B53737;' : ''}" title="${description}">${d}</div>`;
     }
     html += `</div>`;
     calendar.innerHTML = html;

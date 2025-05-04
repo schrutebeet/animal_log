@@ -58,7 +58,7 @@ def manage_appointments_post(
     return RedirectResponse(f"/appointments/manage/{animal_id}", status_code=303)
 
 
-def get_appointments_by_animal_id(db: Session, animal_id: int) -> list[datetime.date]:
+def get_appointments_by_animal_id(db: Session, animal_id: int) -> dict[datetime.date, str]:
     # Fetch appointments for a specific animal
     # Get appointments in the next 6 months
     today = datetime.date.today()
@@ -69,6 +69,6 @@ def get_appointments_by_animal_id(db: Session, animal_id: int) -> list[datetime.
         models.Appointments.date <= in_six_months
     ).all()
 
-    appointments = [a.date.isoformat() for a in appointments]
+    appointments = {a.date.isoformat(): a.description for a in appointments}
 
     return appointments
