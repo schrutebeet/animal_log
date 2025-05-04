@@ -1,0 +1,27 @@
+<!-- app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Veterinary Inventory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <nav class="bg-indigo-600 text-white p-4">
+        <div class="container mx-auto flex justify-between">
+            <div class="font-bold text-lg"><a href="/">Vet Inventory</a></div>
+            <div>
+                {% if request.session.get('user') %}
+                    <span class="mr-4">Logged in as {{ request.session.get('user') }}</span>
+                    <a href="/logout" class="bg-red-500 hover:bg-red-700 px-3 py-1 rounded">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-6">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

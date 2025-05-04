@@ -1,0 +1,20 @@
+<!-- app/templates/animal_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Animal Details</h2>
+<div class="bg-white p-6 rounded shadow">
+    <p><strong>Name:</strong> {{ animal.name }}</p>
+    <p><strong>Owner:</strong> {{ animal.owner }}</p>
+    <p><strong>Species:</strong> {{ animal.species.common_name }}</p>
+    {% if animal.age is not none %}
+      <p><strong>Age:</strong> {{ animal.age }} years</p>
+    {% endif %}
+    {% if animal.weight is not none %}
+      <p><strong>Weight:</strong> {{ animal.weight }} kg</p>
+    {% endif %}
+    <div class="mt-4">
+        <a href="/animals/{{ animal.id }}/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">Edit Record</a>
+    </div>
+</div>
+{% endblock %}

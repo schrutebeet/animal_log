@@ -1,0 +1,10 @@
+<!-- app/templates/landing.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Welcome, {{ user }}!</h1>
+<div class="space-y-4">
+    <a href="/animals/new" class="block text-center bg-green-500 hover:bg-green-600 text-white py-3 rounded text-xl">Register Animal</a>
+    <a href="/animals/search" class="block text-center bg-blue-500 hover:bg-blue-600 text-white py-3 rounded text-xl">Retrieve Animal Record</a>
+</div>
+{% endblock %}
