@@ -7,8 +7,10 @@
     <p><strong>Name:</strong> {{ animal.name }}</p>
     <p><strong>Owner:</strong> {{ animal.owner }}</p>
     <p><strong>Species:</strong> {{ animal.species.common_name }}</p>
-    {% if animal.age is not none %}
-      <p><strong>Age:</strong> {{ animal.age }} years</p>
+    {% if animal.birth is not none %}
+      <p><strong>Age:</strong>  {{ age_years }} {{ "year" if age_years == 1 else "years" }} and {{ age_months }} {{ "month" if age_months == 1 else "months" }}</p>
+    {% else %}
+      <p><strong>Age:</strong> Unknown</p>
     {% endif %}
     {% if animal.weight is not none %}
       <p><strong>Weight:</strong> {{ animal.weight }} kg</p>

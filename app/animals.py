@@ -1,4 +1,6 @@
 # app/animals.py
+import datetime
+
 from fastapi.templating import Jinja2Templates
 from fastapi import APIRouter, Depends, Request, Form, Query
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
@@ -6,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import models
 from app.database import get_db
+from app.utilities.utils import calculate_age, login_required
 
 # Defines what will be a set of routes under the /animals prefix
 router = APIRouter(prefix="/animals")
@@ -18,12 +21,6 @@ def species_autocomplete(query: str = Query(...), db: Session = Depends(get_db))
     results = db.query(models.InventorySpecies).filter(models.InventorySpecies.common_name.ilike(f"%{query}%")).all()
     names = [r.common_name for r in results]
     return JSONResponse(content=names)
-
-def login_required(request: Request):
-    # Helper to ensure user is logged in
-    if not request.session.get("user"):
-        return False
-    return True
 
 @router.get("/new", response_class=HTMLResponse)
 def register_animal_get(request: Request):
@@ -38,8 +35,8 @@ def register_animal_post(
     name: str = Form(...),
     owner: str = Form(...),
     species: str = Form(...),
-    age: int = Form(default=None),
-    weight: float = Form(default=None),
+    birth: datetime.date = Form(default=None),
+    weight: float = Form(...),
     db: Session = Depends(get_db)
 ):
     if not login_required(request):
@@ -56,7 +53,7 @@ def register_animal_post(
     animal = models.Animal(
         name=name,
         owner=owner,
-        age=age,
+        birth=birth,
         weight=weight,
         species_id=species_obj.id
     )
@@ -73,9 +70,10 @@ def search_animal_get(request: Request, name: str | None = None, db: Session = D
         return RedirectResponse("/login")
     animals = None
     if name:
+        print("\n\n\n\n", name, "\n\n\n\n\n\n")
         # Search by partial match (case-insensitive)
         animals = db.query(models.Animal).filter(models.Animal.name.ilike(f"%{name}%")).all()
-    return templates.TemplateResponse("retrieve_animal.html", {"request": request, "animals": animals})
+    return templates.TemplateResponse("retrieve_animal.html", {"request": request, "animals": animals, "router_name": "/animals"})
 
 @router.get("/{animal_id}", response_class=HTMLResponse)
 def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db)):
@@ -84,8 +82,18 @@ def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db
         return RedirectResponse("/login")
     animal = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
     if not animal:
-        return HTMLResponse(request.app.template_response("retrieve_animal.html", {"request": request, "error": "Animal not found"}))
-    return templates.TemplateResponse("animal_detail.html", {"request": request, "animal": animal})
+        return templates.TemplateResponse("retrieve_animal.html", {"request": request, "error": "Animal not found"})
+    
+    if animal.birth:
+        years, months = calculate_age(animal.birth)
+    else:
+        years, months = None, None
+    return templates.TemplateResponse("animal_detail.html", {
+        "request": request,
+        "animal": animal,
+        "age_years": years,
+        "age_months": months
+    })
 
 @router.get("/{animal_id}/edit", response_class=HTMLResponse)
 def edit_animal_get(request: Request, animal_id: int, db: Session = Depends(get_db)):
@@ -95,7 +103,7 @@ def edit_animal_get(request: Request, animal_id: int, db: Session = Depends(get_
     animal = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
     if not animal:
         return RedirectResponse("/animals/search")
-    return templates.TemplateResponse("edit_animal.html", {"request": request, "animal": animal})
+    return templates.TemplateResponse("edit_animal.html", {"request": request, "animal": animal, "router_name": "/animals"})
 
 @router.post("/{animal_id}/edit", response_class=HTMLResponse)
 def edit_animal_post(
@@ -104,8 +112,8 @@ def edit_animal_post(
     name: str = Form(...),
     owner: str = Form(...),
     species: str = Form(...),
-    age: int = Form(default=None),
-    weight: float = Form(default=None),
+    birth: datetime.date = Form(default=None),
+    weight: float = Form(...),
     db: Session = Depends(get_db)
 ):
     # Handle updates to the animal record
@@ -117,7 +125,7 @@ def edit_animal_post(
     # Update fields
     animal.name = name
     animal.owner = owner
-    animal.age = age
+    animal.birth = birth
     animal.weight = weight
     # Update species if changed (find or create)
     species_obj = db.query(models.InventorySpecies).filter(models.InventorySpecies.common_name.ilike(species)).first()

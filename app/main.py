@@ -9,6 +9,7 @@ from app.database import engine, Base
 from app.models import User, InventorySpecies, Animal
 from app.auth import router as auth_router
 from app.animals import router as animal_router
+from app.appointments import router as appointment_router
 
 #App initialization
 app = FastAPI()
@@ -30,6 +31,7 @@ templates = Jinja2Templates(directory=r"app\templates")
 # Essentially, we are adding the routes defined in auth.py and animals.py to the main app.
 app.include_router(auth_router)
 app.include_router(animal_router)
+app.include_router(appointment_router)
 
 # Defines a route for "/" (the homepage).
 @app.get("/", response_class=templates.TemplateResponse)

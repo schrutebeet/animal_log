@@ -1,6 +1,8 @@
 # app/schemas.py
 from pydantic import BaseModel
 
+import datetime
+
 # Define your Pydantic models. These models are used for data validation when receiving POST, PUT, etc requests.
 class UserCreate(BaseModel):
     username: str
@@ -15,7 +17,7 @@ class AnimalBase(BaseModel):
     owner: str
     #age can be int or None, with default value None
     # if None, it means age is optional
-    age: int | None = None
+    birth: datetime.date | None = None
     weight: float | None = None
 
 class AnimalCreate(AnimalBase):
