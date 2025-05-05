@@ -4,21 +4,21 @@ Animal Log is a web-based application designed to manage veterinary records, inc
 
 ## Features
 
-- **User Authentication**: Secure user registration and login using hashed passwords.
-- **Animal Management**:
+- **User authentication**: Secure user registration and login using hashed passwords.
+- **Animal management**:
   - Register new animals with details like name, owner, species, birth date, and weight.
   - Edit existing animal records.
   - Search for animals by name.
   - View detailed animal records, including age and weight.
-- **Species Inventory**:
+- **Species inventory**:
   - Autocomplete functionality for species names during animal registration and editing.
   - Automatically add new species to the inventory if not already present.
-- **Appointment Management**:
+- **Appointment management**:
   - Schedule appointments for animals with veterinarians.
   - View upcoming appointments for the next six months in a calendar format.
-- **Dynamic HTML Templates**: Responsive and user-friendly UI built with Jinja2 and Tailwind CSS.
+- **Dynamic HTML templates**: Responsive and user-friendly UI built with Jinja2 and Tailwind CSS.
 
-## Project Structure
+## Project structure
 
 ```bash
 animal_log/ 
@@ -43,23 +43,23 @@ animal_log/
 
 ## Installation
 
-1. **Clone the Repository**:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/your-username/animal_log.git
    cd animal_log
 
-2. **Set Up a Virtual Environment**:
+2. **Set up a virtual environment**:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install Dependencies: Install dependencies using Poetry:
+3. **Install dependencies**: Install dependencies using Poetry:
 ```bash
 poetry install
 ```
 
-4. Configure Database: Create a credentials.py file in the root directory with the following content:
+4. **Configure database**: Create a credentials.py file in the root directory with the following content:
 ```bash
 username = "your_db_username"
 password = "your_db_password"
@@ -68,29 +68,29 @@ database = "your_db_name"
 poetry install
 ```
 
-5. Run the Application: Start the FastAPI server:
+5. **Run the application**: Start the FastAPI server:
 ```bash
 uvicorn app.main:app --reload
 ```
 
-6. Access the Application: Open your browser and navigate to whatever url your server points to (usually http://127.0.0.1:8000).
+6. **Access the application**: Open your browser and navigate to whatever url your server points to (usually http://127.0.0.1:8000).
 
 
  ## Usage
 
-- **Sign Up**: Create a new user account at /signup.
-- **Log In**: Log in to access the dashboard at /login.
-- **Animal Management**:
+- **Sign up**: Create a new user account at /signup.
+- **Log in**: Log in to access the dashboard at /login.
+- **Animal management**:
     - Register a new animal at `/animals/new`.
     - Search for animals at `/animals/search`.
     - View animal details at `/animals/{animal_id}`.
     - Edit animal records at `/animals/{animal_id}/edit`.
-- **Appointment Management**:
+- **Appointment management**:
     - Schedule appointments at `/appointments/manage/{animal_id}`.
     - View upcoming appointments in the animal detail page.
 
 
-## Technologies Used
+## Technologies used
 
 - **Backend**: FastAPI, SQLAlchemy
 - **Frontend**: Jinja2, Tailwind CSS
@@ -104,9 +104,9 @@ uvicorn app.main:app --reload
 - **Improve colors**: Improve colors in general, i.e., for buttons, bars, calendars, etc. 
 
 ### Animal managment enhancements
-- **Vaccination Records**: Track and display vaccinations, dates administered, expiry, and alerts for upcoming shots.
-- **Medical History Timeline**: Show past appointments, diagnoses, treatments, and notes in a vertical timeline or collapsible list.
-- **File Uploads for Animals**: Allow uploading PDFs/images (e.g. x-rays, lab results, adoption papers).
+- **Vaccination records**: Track and display vaccinations, dates administered, expiry, and alerts for upcoming shots.
+- **Medical history timeline**: Show past appointments, diagnoses, treatments, and notes in a vertical timeline or collapsible list.
+- **File uploads for animals**: Allow uploading PDFs/images (e.g. x-rays, lab results, adoption papers).
 
 ### Appointments and calendar features
 - **Click on dates for appointments** (maybe): Make calendar days clickable to open a modal/form to schedule an appointment directly.
