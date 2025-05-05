@@ -90,7 +90,6 @@ def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db
         years, months = None, None
     
     appointments = get_appointments_by_animal_id(db, animal_id)
-    print("\n\n\n\n\n\n", appointments, "\n\n\n\n\n\n")
     return templates.TemplateResponse("animal_detail.html", {
         "request": request,
         "animal": animal,
