@@ -36,6 +36,7 @@ class Animal(Base):
 
     species = relationship("InventorySpecies", back_populates="animal")
     appointments = relationship("Appointments", back_populates="animal")
+    vaccinations = relationship('Vaccination', back_populates='animal')
 
 class Appointments(Base):
     __tablename__ = "appointments"
@@ -48,3 +49,15 @@ class Appointments(Base):
     description = Column(String(255), nullable=True)
 
     animal = relationship("Animal", back_populates="appointments")
+
+class Vaccination(Base):
+    __tablename__ = "vaccinations"
+    __table_args__ = {"schema": "animals"}
+    id = Column(Integer, primary_key=True)
+    animal_id = Column(Integer, ForeignKey('animals.animals.id'), nullable=False)
+    vaccine_name = Column(String(100), nullable=False)
+    date_administered = Column(Date, nullable=False)
+    expiry_date = Column(Date)
+    notes = Column(String(255))
+
+    animal = relationship('Animal', back_populates='vaccinations')

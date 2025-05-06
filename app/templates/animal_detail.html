@@ -2,6 +2,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% if expiring_vaccines %}
+  <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 p-4 mb-4">
+    <p class="font-bold text-lg">Attention:</p>
+    <ul class="list-disc pl-5">
+      {% for vax in expiring_vaccines %}
+        {% set days_diff = (today - vax.expiry_date).days %}
+        {% set abs_days_diff = days_diff if days_diff >= 0 else -days_diff %}
+        {% set day_label = 'day' if abs_days_diff == 1 else 'days' %}
+        <li>
+          <strong>{{ vax.vaccine_name }}</strong> expires on {{ vax.expiry_date }} 
+          {% if days_diff < 0 %}
+            (<strong>{{ abs_days_diff }}</strong> {{ day_label }} ago)
+          {% else %}
+            (In <strong>{{ abs_days_diff }}</strong> {{ day_label }})
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
 <h2 class="text-2xl font-semibold mb-4">Animal Details</h2>
 <div class="bg-white p-6 rounded shadow">
     <p><strong>Name:</strong> {{ animal.name }}</p>
@@ -19,6 +42,53 @@
         <a href="/animals/{{ animal.id }}/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">Edit Record</a>
     </div>
 </div>
+
+
+<div class="bg-white p-6 rounded shadow mt-6">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-lg font-semibold text-indigo-700">Vaccination Records</h3>
+    <a href="/animals/{{ animal.id }}/vaccinations/new" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+      + Add Vaccination
+    </a>
+  </div>
+  {% if animal.vaccinations %}
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full text-sm text-left text-gray-700">
+        <thead class="bg-gray-100 text-xs uppercase">
+          <tr>
+            <th class="px-4 py-2">Vaccine</th>
+            <th class="px-4 py-2">Date Given</th>
+            <th class="px-4 py-2">Expires</th>
+            <th class="px-4 py-2">Notes</th>
+            <th class="px-4 py-2">Alert</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vax in animal.vaccinations %}
+          <tr class="border-b">
+            <td class="px-4 py-2 font-medium">{{ vax.vaccine_name }}</td>
+            <td class="px-4 py-2">{{ vax.date_administered.strftime('%Y-%m-%d') }}</td>
+            <td class="px-4 py-2">{{ vax.expiry_date.strftime('%Y-%m-%d') if vax.expiry_date else '—' }}</td>
+            <td class="px-4 py-2">{{ vax.notes or '' }}</td>
+            <td class="px-4 py-2">
+              {% if vax.expiry_date and vax.expiry_date < today %}
+                <span class="text-red-600 font-bold">Expired</span>
+              {% elif vax.expiry_date and vax.expiry_date <= warning_date %}
+                <span class="text-yellow-600 font-semibold">Expiring Soon</span>
+              {% else %}
+                <span class="text-green-600 font-semibold">Up to date</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-sm text-gray-500">No vaccination records found.</p>
+  {% endif %}
+</div>
+
 
 <div class="bg-white p-6 rounded shadow mt-6">
   <div class="flex items-center justify-between mb-4">

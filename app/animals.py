@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app import models
 from app.database import get_db
 from app.appointments import get_appointments_by_animal_id
-from app.utilities.utils import calculate_age, login_required
+from app.utilities.utils import calculate_age, login_required, execute_previous_security_checks
 
 # Defines what will be a set of routes under the /animals prefix
 router = APIRouter(prefix="/animals")
@@ -90,12 +90,18 @@ def animal_detail(request: Request, animal_id: int, db: Session = Depends(get_db
         years, months = None, None
     
     appointments = get_appointments_by_animal_id(db, animal_id)
+    warning_date = datetime.date.today() + datetime.timedelta(days=15)
+    expiring_vaccines = [vacc for vacc in animal.vaccinations if vacc.expiry_date and vacc.expiry_date <= warning_date]
+
     return templates.TemplateResponse("animal_detail.html", {
         "request": request,
         "animal": animal,
         "age_years": years,
         "age_months": months,
-        "appointments": appointments
+        "appointments": appointments,
+        "today": datetime.date.today(),
+        "warning_date": warning_date,
+        "expiring_vaccines": expiring_vaccines
     })
 
 @router.get("/{animal_id}/edit", response_class=HTMLResponse)
@@ -120,11 +126,7 @@ def edit_animal_post(
     db: Session = Depends(get_db)
 ):
     # Handle updates to the animal record
-    if not login_required(request):
-        return RedirectResponse("/login")
-    animal = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
-    if not animal:
-        return RedirectResponse("/animals/search")
+    animal = execute_previous_security_checks(request, db, animal_id)
     # Update fields
     animal.name = name
     animal.owner = owner
@@ -138,5 +140,35 @@ def edit_animal_post(
         db.commit()
         db.refresh(species_obj)
     animal.species_id = species_obj.id
+    db.commit()
+    return RedirectResponse(f"/animals/{animal.id}", status_code=303)
+
+@router.get("/{animal_id}/vaccinations/new", response_class=HTMLResponse)
+def add_vaccination_get(request: Request, animal_id: int, db: Session = Depends(get_db)):
+    # Show vaccination form
+    animal = execute_previous_security_checks(request, db, animal_id)
+    print("\n\n\n", datetime.date.today() - datetime.timedelta(days=15), "\n\n\n")
+    return templates.TemplateResponse("add_vaccination.html", {"request": request, "animal": animal})
+
+@router.post("/{animal_id}/vaccinations/new", response_class=HTMLResponse)
+def add_vaccination_post(
+    request: Request,
+    animal_id: int,
+    vaccine_name: str = Form(...),
+    date_administered: datetime.date = Form(...),
+    expiry_date: datetime.date = Form(default=None),
+    notes: str = Form(default=None),
+    db: Session = Depends(get_db)
+):
+    # Add a new vaccination record
+    animal = execute_previous_security_checks(request, db, animal_id)
+    vaccination = models.Vaccination(
+        animal_id=animal.id,
+        vaccine_name=vaccine_name,
+        date_administered=date_administered,
+        expiry_date=expiry_date,
+        notes=notes
+    )
+    db.add(vaccination)
     db.commit()
     return RedirectResponse(f"/animals/{animal.id}", status_code=303)
