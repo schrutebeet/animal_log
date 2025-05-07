@@ -22,7 +22,7 @@ Base.metadata.create_all(bind=engine)
 app.add_middleware(SessionMiddleware, secret_key="YOUR_SECRET_KEY_HERE")
 
 # Tells FastAPI to serve files like CSS, logos, etc., from the folder app/static when a request is made to /static/
-app.mount("/static", StaticFiles(directory=r"app\static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Set up Jinja2 templates directory. Used to render dynamic HTML pages.
 templates = Jinja2Templates(directory=r"app\templates")

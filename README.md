@@ -101,11 +101,9 @@ uvicorn app.main:app --reload
 
 ## Future development
 ### Improve current UI design
-- **Intro page**: Design a wallpaper to welcome the user to the login page
 - **Improve colors**: Improve colors in general, i.e., for buttons, bars, calendars, etc. 
 
 ### Animal managment enhancements
-- **Vaccination records**: Track and display vaccinations, dates administered, expiry, and alerts for upcoming shots.
 - **Medical history timeline**: Show past appointments, diagnoses, treatments, and notes in a vertical timeline or collapsible list.
 - **File uploads for animals**: Allow uploading PDFs/images (e.g. x-rays, lab results, adoption papers).
 
