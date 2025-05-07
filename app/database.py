@@ -2,9 +2,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from credentials import username, password, host, database
+from credentials import DatabaseKey
 # Replace with your actual database credentials
-SQLALCHEMY_DATABASE_URL = f"postgresql://{username}:{password}@{host}/{database}"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{DatabaseKey.user}:{DatabaseKey.password}@{DatabaseKey.host}/{DatabaseKey.database}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
