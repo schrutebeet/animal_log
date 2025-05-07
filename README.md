@@ -10,6 +10,7 @@ Animal Log is a web-based application designed to manage veterinary records, inc
   - Edit existing animal records.
   - Search for animals by name.
   - View detailed animal records, including age and weight.
+  - View and manage vaccines and their due dates.
 - **Species inventory**:
   - Autocomplete functionality for species names during animal registration and editing.
   - Automatically add new species to the inventory if not already present.
